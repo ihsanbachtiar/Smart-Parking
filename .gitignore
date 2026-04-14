@@ -1,0 +1,11 @@
+# Node modules
+api/node_modules/
+node_modules/
+
+# Mac OS
+.DS_Store
+
+# Flutter ignore is already handled inside app/ folder by default, 
+# but we can optionally ignore IDE folders
+.idea/
+.vscode/
