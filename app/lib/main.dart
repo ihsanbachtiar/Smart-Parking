@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'providers/parking_provider.dart';
-import 'providers/settings_provider.dart';
-import 'screens/splash_screen.dart';
+import 'data/services/parking_api_service.dart';
+import 'data/repositories/parking_repository_impl.dart';
+import 'domain/usecases/get_parking_data_usecase.dart';
+import 'domain/usecases/clear_cache_usecase.dart';
+
+import 'presentation/providers/parking_provider.dart';
+import 'presentation/providers/settings_provider.dart';
+import 'presentation/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,10 +17,21 @@ void main() async {
   // Inisialisasi SharedPreferences
   final prefs = await SharedPreferences.getInstance();
 
+  // Dependecy Injection Setup (Clean Architecture)
+  final apiService = ParkingApiService(prefs: prefs);
+  final repository = ParkingRepositoryImpl(apiService: apiService);
+  final getParkingDataUseCase = GetParkingDataUseCase(repository);
+  final clearCacheUseCase = ClearCacheUseCase(repository);
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ParkingProvider(prefs)),
+        ChangeNotifierProvider(
+          create: (_) => ParkingProvider(
+            getParkingDataUseCase: getParkingDataUseCase,
+            clearCacheUseCase: clearCacheUseCase,
+          ),
+        ),
         ChangeNotifierProvider(create: (_) => SettingsProvider(prefs)),
       ],
       child: const SmartParkingApp(),

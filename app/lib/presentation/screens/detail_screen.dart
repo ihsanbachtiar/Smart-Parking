@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../models/parking_sensor.dart';
+import '../../data/models/parking_sensor.dart';
 
 class DetailScreen extends StatelessWidget {
   final ParkingSensor sensor;
